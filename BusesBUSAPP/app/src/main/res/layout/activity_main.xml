@@ -11,7 +11,46 @@
     tools:context="com.example.jorge_alejandro.busesbusapp.MainActivity">
 
     <TextView
+        android:text="Aplicación para los vehiculos de transporte urbano"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:id="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="Latitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView3"
+        android:layout_marginStart="0dp"
+        android:layout_below="@+id/textView2"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_marginTop="200dp" />
+
+    <TextView
+        android:text="Longitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView4"
+        android:layout_below="@+id/textView2"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_marginTop="220dp" />
+
+    <TextView
+        android:layout_width="300px"
+        android:layout_height="50px"
+        android:id="@+id/longitud"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/textView4" />
+
+    <TextView
+        android:layout_width="300px"
+        android:layout_height="50px"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/textView3"
+        android:id="@+id/latitud" />
+
 </RelativeLayout>
