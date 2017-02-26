@@ -20,8 +20,10 @@ public class WSCbusLoginRegister extends AsyncTask<String, Long, String> {
         }
     }
 
+    /*
     protected void onPostExecute(String response) {
-        Log.d(response,response);
+        Log.d("Hola",response);
+
         if (response!=null)
         {
             Gson json=new Gson();
@@ -32,4 +34,5 @@ public class WSCbusLoginRegister extends AsyncTask<String, Long, String> {
             MainActivity.bus=null;
         }
     }
+    */
 }

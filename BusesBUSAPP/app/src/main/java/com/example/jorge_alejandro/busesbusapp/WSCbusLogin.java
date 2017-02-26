@@ -22,7 +22,7 @@ public class WSCbusLogin extends AsyncTask<String, Long, String> {
     }
 
     protected void onPostExecute(String response) {
-        Log.d(response,response);
+        Log.d("DESDE POST EXECUTE",response);
         if (response=="Success")
         {
             MainActivity.successLogin=true;
