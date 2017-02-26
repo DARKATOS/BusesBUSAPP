@@ -10,47 +10,58 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.jorge_alejandro.busesbusapp.MainActivity">
 
-    <TextView
-        android:text="Aplicación para los vehiculos de transporte urbano"
+    <Button
+        android:text="Iniciar sesión"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:layout_alignParentTop="true"
+        android:layout_marginBottom="117dp"
+        android:id="@+id/button1"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:text="Latitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BUSAPP"
+        android:id="@+id/textView"
+        android:layout_marginTop="37dp"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="Placa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_toStartOf="@+id/button1"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="68dp"
+        android:id="@+id/textView2" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/editText"
+        android:layout_alignBaseline="@+id/textView2"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="Contraseña"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView3"
-        android:layout_marginStart="0dp"
-        android:layout_below="@+id/textView2"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_marginTop="200dp" />
+        android:layout_centerVertical="true"
+        android:layout_alignEnd="@+id/textView2" />
 
-    <TextView
-        android:text="Longitud"
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView4"
-        android:layout_below="@+id/textView2"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_marginTop="220dp" />
-
-    <TextView
-        android:layout_width="300px"
-        android:layout_height="50px"
-        android:id="@+id/longitud"
-        android:layout_alignBottom="@+id/textView4"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/textView4" />
-
-    <TextView
-        android:layout_width="300px"
-        android:layout_height="50px"
-        android:layout_alignBottom="@+id/textView3"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/textView3"
-        android:id="@+id/latitud" />
+        android:inputType="textPassword"
+        android:ems="10"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/editText"
+        android:id="@+id/editText2" />
 
 </RelativeLayout>
