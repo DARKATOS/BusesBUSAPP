@@ -20,7 +20,7 @@ public class Main2Activity extends AppCompatActivity {
     LocationManager locationManager;
     Location location;
     boolean gpsActivo;
-
+    boolean flag;
     TextView tlatitud;
     TextView tlongitud;
 
@@ -28,9 +28,11 @@ public class Main2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        flag=false;
         tlatitud = (TextView) findViewById(R.id.latitud);
         tlongitud = (TextView) findViewById(R.id.longitud);
         getLocation();
+
     }
 
     LocationListener locationListener = new LocationListener() {
@@ -59,6 +61,7 @@ public class Main2Activity extends AppCompatActivity {
         try {
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             gpsActivo = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            flag=true;
 
             if (gpsActivo) {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -71,7 +74,7 @@ public class Main2Activity extends AppCompatActivity {
                     // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
                 location=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 actualizarUbicacion(location);
             }
@@ -101,6 +104,7 @@ public class Main2Activity extends AppCompatActivity {
                 {
                     tlatitud.setText(Double.toString(latitude));
                     tlongitud.setText(Double.toString(longitude));
+                    Log.d("Errror", "Actualizando ubicacion");
                 }
             }catch(Exception ex)
             {
@@ -109,26 +113,36 @@ public class Main2Activity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationDelete/" + MainActivity.bus.getId();
-            String response = new WSC().execute(url).get();
-            if (response.equals("Failure"))
-            {
-                Log.d("Error", "No se pudo eliminar la ubicacion del bus");
-            }
-        }catch(Exception ex)
-        {
-            Log.d("Error", "Exception: "+ex.toString());
-        }
-    }
 
     @Override
     protected void onRestart() {
         super.onRestart();
         Intent i=new Intent(Main2Activity.this,MainActivity.class);
         startActivity(i);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            if (flag)
+            {
+                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationDelete/" + MainActivity.bus.getId();
+                String response = new WSC().execute(url).get();
+                if (response.equals("Success"))
+                {
+                    Log.d("Error", "Eliminada la ubicacion del bus");
+                }
+                else
+                {
+                    Log.d("Error", "No se pudo eliminar la ubicacion del bus");
+                }
+            }
+            flag=true;
+
+        }catch(Exception ex)
+        {
+            Log.d("Error", "Exception: "+ex.toString());
+        }
     }
 }
