@@ -1,6 +1,7 @@
 package com.example.jorge_alejandro.busesbusapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -8,13 +9,14 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main2Activity extends AppCompatActivity {
 
-    double latitud;
-    double longitud;
+    double latitude;
+    double longitude;
     LocationManager locationManager;
     Location location;
     boolean gpsActivo;
@@ -89,10 +91,44 @@ public class Main2Activity extends AppCompatActivity {
     public void actualizarUbicacion(Location location)
     {
         if (location != null) {
-            latitud = location.getLatitude();
-            longitud = location.getLongitude();
-            tlatitud.setText(Double.toString(latitud));
-            tlongitud.setText(Double.toString(longitud));
+            try {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+
+                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationUpdate/" + MainActivity.bus.getId()+"/"+latitude+"/"+longitude;
+                String response = new WSC().execute(url).get();
+                if (response.equals("Success"))
+                {
+                    tlatitud.setText(Double.toString(latitude));
+                    tlongitud.setText(Double.toString(longitude));
+                }
+            }catch(Exception ex)
+            {
+                Log.d("Error", "Exception: "+ex.toString());
+            }
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationDelete/" + MainActivity.bus.getId();
+            String response = new WSC().execute(url).get();
+            if (response.equals("Failure"))
+            {
+                Log.d("Error", "No se pudo eliminar la ubicacion del bus");
+            }
+        }catch(Exception ex)
+        {
+            Log.d("Error", "Exception: "+ex.toString());
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Intent i=new Intent(Main2Activity.this,MainActivity.class);
+        startActivity(i);
     }
 }

@@ -1,6 +1,6 @@
 package com.example.jorge_alejandro.busesbusapp;
 
-import android.content.Context;
+
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,30 +10,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import android.util.Log;
 
 import com.google.gson.Gson;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button iniciarSesion;
-    public static boolean successLogin;
-    private Bus bus;
+    public static Bus bus;
 
     private EditText editTextPlate;
     private EditText editTextPassword;
@@ -42,10 +33,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (readFile())
+        if (readFileSession())
         {
-            Intent i=new Intent(MainActivity.this,Main2Activity.class);
-            startActivity(i);
+            if (busLocationRegister())
+            {
+                Intent i=new Intent(MainActivity.this,Main2Activity.class);
+                startActivity(i);
+            }
+
         }
         else
         {
@@ -66,6 +61,28 @@ public class MainActivity extends AppCompatActivity {
         //Aplicativo para los buses, obtener coordenadas y cambios de coordenadas de acuerdo a su movimiento en intervalos de tiempo de actualizacion
     }
 
+    public boolean busLocationRegister()
+    {
+        try {
+            String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationRegister/" + bus.getId();
+            String response = new WSC().execute(url).get();
+            if (response.equals("Success"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }catch (Exception ex)
+        {
+            Log.d("Error", "Exception: "+ex.toString());
+            return false;
+        }
+
+    }
+
     public boolean logIn()
     {
         try {
@@ -78,12 +95,11 @@ public class MainActivity extends AppCompatActivity {
             } else {
 
                 String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLogInRegister/" + plate + "/" + password;
-                String response =new WSCbusLoginRegister().execute(url).get();
-                Log.d("Objeto: ", response);
+                String response =new WSC().execute(url).get();
                 Gson json=new Gson();
                 bus=json.fromJson(response, Bus.class);
                 if (bus != null) {
-                    //writeFile(bus);
+                    writeFileSession(bus);
                     return true;
                 } else {
                     Toast toast1 = Toast.makeText(getApplicationContext(), "No existe el bus", Toast.LENGTH_SHORT);
@@ -98,33 +114,49 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean readFile()
+    public boolean readFileSession()
     {
-
-        successLogin=false;
-        BufferedReader read=null;
         try
         {
-            FileOutputStream fout=openFileOutput("sessioninformation.txt", Context.MODE_PRIVATE);
-            read =new BufferedReader(new InputStreamReader(openFileInput("sessioninformation.txt")));
-
-            String text = read.readLine();
-            if(text!=null)
+            File directory = getExternalFilesDir(null);
+            File file = new File(directory.getAbsolutePath(), "sessioninformation.txt");
+            if (file.exists())
             {
-                String idbus=text;
-                text=read.readLine();
-                String plate=text;
-                String url="http://192.168.1.57:8084/BUSAPP/rest/services/busLogin/"+idbus+"/"+plate;
-                new WSCbusLogin().execute(url);
-                if (successLogin)
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+                String text = bufferedReader.readLine();
+                if(text!=null)
                 {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    int id=Integer.parseInt(text);
+                    text=bufferedReader.readLine();
+                    String plate=text;
+                    text=bufferedReader.readLine();
+                    String driverName=text;
+                    text=bufferedReader.readLine();
+                    String busType=text;
+                    text=bufferedReader.readLine();
+                    int ticketPrice=Integer.parseInt(text);
+                    bufferedReader.close();
+                    bus=new Bus(id,plate,null,driverName,busType,ticketPrice);
+                    String url="http://192.168.1.57:8084/BUSAPP/rest/services/busLogIn/"+bus.getId()+"/"+bus.getPlate();
+                    String response=new WSC().execute(url).get();
+                    Log.d("info",response);
+                    if (response.equals("Success"))
+                    {
+                        Log.d("Info", "Entro sucess");
+                        return true;
+                    }
+                    else
+                    {
+                        Log.d("Info", "Entro failure");
+                        return false;
+                    }
                 }
             }
+            else
+            {
+                return false;
+            }
+            Log.d("Info", "Leyo o no leyo");
         }
         catch (Exception ex)
         {
@@ -133,20 +165,15 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public void writeFile(Bus bus)
+    public void writeFileSession(Bus bus)
     {
         try
         {
-            FileOutputStream fout=openFileOutput("sessioninformation.txt", Context.MODE_PRIVATE);
-            PrintWriter printWriter= new PrintWriter(fout, true);
-            printWriter.write("");
-            printWriter.println(bus.getId()+"\n");
-            printWriter.println(bus.getPlate()+"\n");
-            printWriter.println(bus.getDriverName()+"\n");
-            printWriter.println(bus.getType()+"\n");
-            printWriter.println(bus.getTicketPrice());
-            printWriter.close();
-            fout.close();
+            File directory = getExternalFilesDir(null);
+            File file = new File(directory.getAbsolutePath(), "sessioninformation.txt");
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
+            outputStreamWriter.write(bus.getId()+"\n"+bus.getPlate()+"\n"+bus.getDriverName()+"\n"+bus.getBusType()+"\n"+bus.getTicketPrice());
+            outputStreamWriter.close();
         }
         catch (Exception ex)
         {
