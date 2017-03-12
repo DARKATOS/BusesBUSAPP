@@ -15,19 +15,19 @@ import android.widget.Toast;
 
 public class Main2Activity extends AppCompatActivity {
 
-    double latitude;
-    double longitude;
     LocationManager locationManager;
     Location location;
     boolean gpsActivo;
     boolean flag;
     TextView tlatitud;
     TextView tlongitud;
+    Bus bus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        bus=(Bus)getIntent().getExtras().getSerializable("bus");
         flag=false;
         tlatitud = (TextView) findViewById(R.id.latitud);
         tlongitud = (TextView) findViewById(R.id.longitud);
@@ -95,16 +95,17 @@ public class Main2Activity extends AppCompatActivity {
     {
         if (location != null) {
             try {
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
 
-                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationUpdate/" + MainActivity.bus.getId()+"/"+latitude+"/"+longitude;
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                busLocation busLocation =new busLocation(-1, latitude, longitude, bus);
+
+                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationUpdate/" + busLocation.getBus().getId()+"/"+ busLocation.getLatitude()+"/"+ busLocation.getLongitude();
                 String response = new WSC().execute(url).get();
                 if (response.equals("Success"))
                 {
-                    tlatitud.setText(Double.toString(latitude));
-                    tlongitud.setText(Double.toString(longitude));
-                    Log.d("Errror", "Actualizando ubicacion");
+                    tlatitud.setText(Double.toString(busLocation.getLatitude()));
+                    tlongitud.setText(Double.toString(busLocation.getLongitude()));
                 }
             }catch(Exception ex)
             {
@@ -125,9 +126,10 @@ public class Main2Activity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         try {
+
             if (flag)
             {
-                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationDelete/" + MainActivity.bus.getId();
+                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationDelete/" + bus.getId();
                 String response = new WSC().execute(url).get();
                 if (response.equals("Success"))
                 {

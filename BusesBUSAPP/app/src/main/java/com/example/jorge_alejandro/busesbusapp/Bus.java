@@ -1,10 +1,12 @@
 package com.example.jorge_alejandro.busesbusapp;
 
+import java.io.Serializable;
+
 /**
  * Created by JORGE_ALEJANDRO on 25/02/2017.
  */
 
-public class Bus {
+public class Bus implements Serializable{
 
     private int id;
     private String plate;
