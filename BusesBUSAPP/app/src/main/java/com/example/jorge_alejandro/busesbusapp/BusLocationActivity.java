@@ -13,12 +13,12 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Main2Activity extends AppCompatActivity {
+public class BusLocationActivity extends AppCompatActivity {
 
     LocationManager locationManager;
     Location location;
-    boolean gpsActivo;
-    boolean flag;
+    boolean activeGps;
+    int flag;
     TextView tlatitud;
     TextView tlongitud;
     Bus bus;
@@ -26,9 +26,9 @@ public class Main2Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_buslocation);
         bus=(Bus)getIntent().getExtras().getSerializable("bus");
-        flag=false;
+        flag=1;
         tlatitud = (TextView) findViewById(R.id.latitud);
         tlongitud = (TextView) findViewById(R.id.longitud);
         getLocation();
@@ -38,7 +38,7 @@ public class Main2Activity extends AppCompatActivity {
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            actualizarUbicacion(location);
+            locationUpdate(location);
         }
 
         @Override
@@ -60,10 +60,9 @@ public class Main2Activity extends AppCompatActivity {
     public void getLocation() {
         try {
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            gpsActivo = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            flag=true;
+            activeGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            if (gpsActivo) {
+            if (activeGps) {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -74,9 +73,10 @@ public class Main2Activity extends AppCompatActivity {
                     // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
-                location=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                actualizarUbicacion(location);
+                Log.d("Info: ", "activando localizacion");
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, locationListener);
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                locationUpdate(location);
             }
             else
             {
@@ -91,16 +91,21 @@ public class Main2Activity extends AppCompatActivity {
         }
     }
 
-    public void actualizarUbicacion(Location location)
+    public void locationUpdate(Location location)
     {
         if (location != null) {
             try {
 
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-                busLocation busLocation =new busLocation(-1, latitude, longitude, bus);
+                BusLocation busLocation =new BusLocation(-1, latitude, longitude, bus);
 
-                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationUpdate/" + busLocation.getBus().getId()+"/"+ busLocation.getLatitude()+"/"+ busLocation.getLongitude();
+                Log.d("Info", "Actualizando");
+                Log.d("Info", String.valueOf(busLocation.getBus().getId()));
+                Log.d("Info", String.valueOf(busLocation.getLatitude()));
+                Log.d("Info", String.valueOf(busLocation.getLongitude()));
+
+                String url = "http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLocationUpdate/" + busLocation.getBus().getId()+"/"+ busLocation.getLatitude()+"/"+ busLocation.getLongitude();
                 String response = new WSC().execute(url).get();
                 if (response.equals("Success"))
                 {
@@ -112,13 +117,17 @@ public class Main2Activity extends AppCompatActivity {
                 Log.d("Error", "Exception: "+ex.toString());
             }
         }
+        else
+        {
+            Log.d("Info: ", "Location null");
+        }
     }
 
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Intent i=new Intent(Main2Activity.this,MainActivity.class);
+        Intent i=new Intent(BusLocationActivity.this,LoginActivity.class);
         startActivity(i);
     }
 
@@ -127,9 +136,9 @@ public class Main2Activity extends AppCompatActivity {
         super.onStop();
         try {
 
-            if (flag)
+            if (flag==1)
             {
-                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationDelete/" + bus.getId();
+                String url = "http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLocationDelete/" + bus.getId();
                 String response = new WSC().execute(url).get();
                 if (response.equals("Success"))
                 {
@@ -139,8 +148,13 @@ public class Main2Activity extends AppCompatActivity {
                 {
                     Log.d("Error", "No se pudo eliminar la ubicacion del bus");
                 }
+                flag=0;
             }
-            flag=true;
+            else
+            {
+                flag++;
+            }
+
 
         }catch(Exception ex)
         {

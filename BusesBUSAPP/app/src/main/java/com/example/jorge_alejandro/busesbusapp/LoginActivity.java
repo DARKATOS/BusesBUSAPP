@@ -8,36 +8,28 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+public class LoginActivity extends AppCompatActivity {
 
-import com.google.gson.Gson;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-
-public class MainActivity extends AppCompatActivity {
+    public static String ip="192.168.1.57";
 
     private Button iniciarSesion;
     private EditText editTextPlate;
     private EditText editTextPassword;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         final Session session= new Session();
         Bus bus=session.readFileSession(getApplicationContext());
         if (bus!=null)
         {
             if (busLocationRegister(bus))
             {
-                Intent i=new Intent(MainActivity.this,Main2Activity.class);
+                Intent i=new Intent(LoginActivity.this,BusLocationActivity.class);
                 i.putExtra("bus",bus);
                 startActivity(i);
             }
@@ -56,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                     Bus bus=session.logIn(plate, password, getApplicationContext());
                     if (bus!=null)
                     {
-                        Intent i=new Intent(MainActivity.this,Main2Activity.class);
+                        Intent i=new Intent(LoginActivity.this,BusLocationActivity.class);
                         i.putExtra("bus", bus);
                         startActivity(i);
                     }
@@ -74,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean busLocationRegister(Bus bus)
     {
         try {
-            String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLocationRegister/" + bus.getId();
+            Log.d("Info: ", "id del bus: "+bus.getId());
+            String url = "http://"+ip+":8084/BUSAPP/rest/services/busLocationRegister/" + bus.getId();
             String response = new WSC().execute(url).get();
             if (response.equals("Success"))
             {
@@ -92,8 +85,4 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
-
-
 }

@@ -1,7 +1,6 @@
 package com.example.jorge_alejandro.busesbusapp;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -48,7 +47,7 @@ public class Session {
                     int ticketPrice=Integer.parseInt(text);
                     bufferedReader.close();
                     Bus bus=new Bus(id,plate,null,driverName,busType,ticketPrice);
-                    String url="http://192.168.1.57:8084/BUSAPP/rest/services/busLogIn/"+bus.getId()+"/"+bus.getPlate();
+                    String url="http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLogIn/"+bus.getId()+"/"+bus.getPlate();
                     String response=new WSC().execute(url).get();
                     Log.d("info",response);
                     if (response.equals("Success"))
@@ -118,7 +117,7 @@ public class Session {
                 return null;
             } else {
 
-                String url = "http://192.168.1.57:8084/BUSAPP/rest/services/busLogInRegister/" + bus.getPlate() + "/" + bus.getPassword();
+                String url = "http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLogInRegister/" + bus.getPlate() + "/" + bus.getPassword();
                 String response =new WSC().execute(url).get();
                 Gson json=new Gson();
                 bus=json.fromJson(response, Bus.class);
