@@ -19,6 +19,7 @@ import java.io.OutputStreamWriter;
 
 public class Session {
 
+    private String ip="192.168.1.57";
     /**
      * read file session: Metodo que permite leer el archivo de sesión de la aplicación para obtener datos y hacer la conexión con el servidor.
      * @param context Contexto donde se realiza la lectura del archivo de sesión.
@@ -47,7 +48,7 @@ public class Session {
                     int ticketPrice=Integer.parseInt(text);
                     bufferedReader.close();
                     Bus bus=new Bus(id,plate,null,driverName,busType,ticketPrice);
-                    String url="http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLogIn/"+bus.getId()+"/"+bus.getPlate();
+                    String url="http://"+ip+":8084/BUSAPP/rest/services/busLogIn/"+bus.getId()+"/"+bus.getPlate();
                     String response=new WSC().execute(url).get();
                     Log.d("info",response);
                     if (response.equals("Success"))
@@ -117,7 +118,7 @@ public class Session {
                 return null;
             } else {
 
-                String url = "http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLogInRegister/" + bus.getPlate() + "/" + bus.getPassword();
+                String url = "http://"+ip+":8084/BUSAPP/rest/services/busLogInRegister/" + bus.getPlate() + "/" + bus.getPassword();
                 String response =new WSC().execute(url).get();
                 Gson json=new Gson();
                 bus=json.fromJson(response, Bus.class);
