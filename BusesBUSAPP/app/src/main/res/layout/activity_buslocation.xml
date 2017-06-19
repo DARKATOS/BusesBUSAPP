@@ -19,25 +19,6 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:text="Latitud"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView3"
-        android:layout_marginStart="0dp"
-        android:layout_below="@+id/textView2"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_marginTop="200dp" />
-
-    <TextView
-        android:text="Longitud"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView4"
-        android:layout_below="@+id/textView2"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_marginTop="220dp" />
-
-    <TextView
         android:layout_width="300px"
         android:layout_height="50px"
         android:id="@+id/longitud"
@@ -53,4 +34,67 @@
         android:layout_alignTop="@+id/textView3"
         android:id="@+id/latitud" />
 
+    <TextView
+        android:text="Latitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView3"
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/textView2"
+        android:layout_alignStart="@+id/textView2" />
+
+    <TextView
+        android:text="Longitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView4"
+        android:layout_marginTop="17dp"
+        android:layout_below="@+id/textView3"
+        android:layout_alignStart="@+id/textView3" />
+
+    <TextView
+        android:text="Rutas del Bus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/longitud"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="77dp"
+        android:id="@+id/textView5" />
+
+    <ScrollView
+        android:id="@+id/scrollvertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:layout_weight="1"
+        android:layout_alignParentStart="true"
+        android:clipToPadding="false"
+        android:layout_marginTop="220dp"
+        android:layout_marginBottom="80dp">
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollhorizontal"
+            android:scrollbars="horizontal"
+            android:layout_weight="1">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TableLayout
+                    android:id="@+id/tabla"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </TableLayout>
+            </LinearLayout>
+        </HorizontalScrollView>
+    </ScrollView>
+
+    <Button
+        android:text="Nueva Ruta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

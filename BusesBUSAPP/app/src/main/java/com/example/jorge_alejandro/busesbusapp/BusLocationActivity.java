@@ -10,8 +10,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class BusLocationActivity extends AppCompatActivity {
 
@@ -22,17 +29,54 @@ public class BusLocationActivity extends AppCompatActivity {
     TextView tlatitud;
     TextView tlongitud;
     Bus bus;
+    ArrayList<BusWay> busWay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buslocation);
         bus=(Bus)getIntent().getExtras().getSerializable("bus");
+        busWay=recuperarRuta();
+        crearTabla();
         flag=1;
         tlatitud = (TextView) findViewById(R.id.latitud);
         tlongitud = (TextView) findViewById(R.id.longitud);
         getLocation();
 
+    }
+
+    public ArrayList<BusWay> recuperarRuta()
+    {
+        try
+        {
+            String url = "http://"+ LoginActivity.ip+"/BUSAPP/rest/services/busWayShow/" + bus.getId();
+            String response = new WSC().execute(url).get();
+            Gson json= new Gson();
+            Type type=new TypeToken<ArrayList<BusLocation>>() {}.getType();
+            ArrayList<BusWay> busWay=json.fromJson(response,type);
+            return busWay;
+        }
+        catch(Exception ex)
+        {
+            Log.d("Error", "Exception: "+ex.toString());
+            return null;
+        }
+
+
+    }
+
+    public void crearTabla()
+    {
+        TablaRuta tabla = new TablaRuta(this, (TableLayout)findViewById(R.id.tabla));
+        tabla.agregarCabecera(R.array.cabeceraTabla);
+        for (int i=0; i<busWay.size(); i++)
+        {
+            ArrayList<String>elementos=new ArrayList<>();
+            elementos.add(String.valueOf(busWay.get(i).getIdbusWay()));
+            elementos.add(busWay.get(i).getWayName());
+            elementos.add("");
+            tabla.agregarFilaTabla(elementos);
+        }
     }
 
     LocationListener locationListener = new LocationListener() {
@@ -105,7 +149,7 @@ public class BusLocationActivity extends AppCompatActivity {
                 Log.d("Info", String.valueOf(busLocation.getLatitude()));
                 Log.d("Info", String.valueOf(busLocation.getLongitude()));
 
-                String url = "http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLocationUpdate/" + busLocation.getBus().getId()+"/"+ busLocation.getLatitude()+"/"+ busLocation.getLongitude();
+                String url = "http://"+ LoginActivity.ip+"/BUSAPP/rest/services/busLocationUpdate/" + busLocation.getBus().getId()+"/"+ busLocation.getLatitude()+"/"+ busLocation.getLongitude();
                 String response = new WSC().execute(url).get();
                 if (response.equals("Success"))
                 {
@@ -138,7 +182,7 @@ public class BusLocationActivity extends AppCompatActivity {
 
             if (flag==1)
             {
-                String url = "http://"+ LoginActivity.ip+":8084/BUSAPP/rest/services/busLocationDelete/" + bus.getId();
+                String url = "http://"+ LoginActivity.ip+"/BUSAPP/rest/services/busLocationDelete/" + bus.getId();
                 String response = new WSC().execute(url).get();
                 if (response.equals("Success"))
                 {

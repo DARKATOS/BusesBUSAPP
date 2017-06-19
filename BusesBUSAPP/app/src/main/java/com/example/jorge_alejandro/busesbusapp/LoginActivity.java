@@ -11,7 +11,7 @@ import android.widget.EditText;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static String ip="192.168.1.57";
+    public static String ip="181.59.153.198:8085";
 
     private Button iniciarSesion;
     private EditText editTextPlate;
@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     {
         try {
             Log.d("Info: ", "id del bus: "+bus.getId());
-            String url = "http://"+ip+":8084/BUSAPP/rest/services/busLocationRegister/" + bus.getId();
+            String url = "http://"+ip+"/BUSAPP/rest/services/busLocationRegister/" + bus.getId();
             String response = new WSC().execute(url).get();
             if (response.equals("Success"))
             {
