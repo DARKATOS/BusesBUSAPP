@@ -70,7 +70,7 @@ public class TablaRuta {
         for(int i = 0; i< elementos.size(); i++)
         {
             TextView texto = new TextView(actividad);
-            texto.setText(String.valueOf(elementos.get(i).get));
+            texto.setText(String.valueOf(elementos.get(i)));
             texto.setGravity(Gravity.CENTER_HORIZONTAL);
             texto.setTextAppearance(actividad, R.style.estiloCelda);
             texto.setBackgroundResource(R.drawable.celda);

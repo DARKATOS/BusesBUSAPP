@@ -10,6 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +32,7 @@ public class BusLocationActivity extends AppCompatActivity {
     TextView tlongitud;
     Bus bus;
     ArrayList<BusWay> busWay;
+    Button way;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,18 @@ public class BusLocationActivity extends AppCompatActivity {
         flag=1;
         tlatitud = (TextView) findViewById(R.id.latitud);
         tlongitud = (TextView) findViewById(R.id.longitud);
+        way=(Button)findViewById(R.id.button);
+        way.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bus!=null)
+                {
+                    Intent i=new Intent(BusLocationActivity.this, WayDialog.class);
+                    i.putExtra("bus", bus);
+                    startActivity(i);
+                }
+            }
+        });
         getLocation();
 
     }
